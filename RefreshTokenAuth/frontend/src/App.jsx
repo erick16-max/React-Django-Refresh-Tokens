@@ -1,37 +1,40 @@
 import { Outlet, Link } from "react-router-dom";
 import AuthContext from "./context/AuthContext";
 import { useContext } from "react";
+import { AppBar, Toolbar, IconButton, Typography, Stack, Button } from "@mui/material";
+import CatchingPokemonIcon from "@mui/icons-material/CatchingPokemon"
 
 export default function App() {
   const {user, logoutUser} = useContext(AuthContext)
   
   return (
-    <div style={{ display: "block",}}>
-      <nav
-        style={{
-          borderRight: "solid 1px",
-          padding: "1rem",
-          display: "flex", 
-          flexDirection:"row",
-        }}
-      >
-        
-          <Link style={{ display: "block", marginRight:"20px" }} to="/home">Home</Link>  
+    <>
+      <AppBar position="static" sx={{marginBottom:"20px"}}>
+         <Toolbar >
+          <IconButton size="large" edge="start" color="inherit" arial-label="logo">
+              <CatchingPokemonIcon />
+          </IconButton>
+          <Typography variant="h5" component="div" sx={{flexGrow:"1"}}>Todo App</Typography>
+          <Stack direction="row" spacing={2}>
+            <Link style={{color:"white", textDecoration:"none"}} to="/home" color="inherit">Home</Link>
+            {
+              user ? <>
+                      <Link style={{color:"white", textDecoration:"none"}} color="inherit" onClick={logoutUser}>Logout</Link>
+                      <Link style={{color:"white", textDecoration:"none"}} variant="h6" component="div">welcome {user.username}</Link>
+                      </>
+                   :
+                      <>
+                      <Link style={{color:"white", textDecoration:"none"}} to="/login" color="inherit">Login</Link>
+                      <Link style={{color:"white", textDecoration:"none"}} to="/register" color="inherit">Sign Up</Link>
+                      </>
+            }
+
+          </Stack>
           
-          
-          {
-            user ?  
-            <button style={{ display: "block", marginLeft:"20px"}} to="/login" onClick={logoutUser}>Logout</button>
-            :
-            <>
-            <Link style={{ display: "block", marginLeft:"20px", cursor:"pointer"}} to="/login">Login</Link>
-            <Link style={{ display: "block", marginLeft:"20px", cursor:"pointer"}} to="/register">Register</Link>
-            </>
-          }
-          {user && <p>welcome {user.username}</p>}
-      </nav>
+         </Toolbar>
+      </AppBar>
       
-      <Outlet/>
-    </div>
+      <Outlet />
+    </>
   );
 }

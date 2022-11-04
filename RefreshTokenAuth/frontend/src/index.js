@@ -9,6 +9,7 @@ import App from "./App";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register"
+import Index from "./pages/Index";
 import CreateTodo from "./components/CreateTodo";
 import UpdateTodo from "./components/UpdateTodo";
 import PrivateRoute from "./middleware/PrivateRoute";
@@ -23,7 +24,7 @@ root.render(
       <AuthProvider>
           <Routes>
             <Route path="/" element={<App />}>
-              <Route index element={<h3>Django React Refresh Token Apllication</h3>}/>
+              <Route index element={<Index />}/>
               <Route path="home" element={<PrivateRoute><Home/></PrivateRoute>} />
               <Route path="create-todo" element={<PrivateRoute><CreateTodo/></PrivateRoute>}/>
               <Route path="update-todo" element={<PrivateRoute><UpdateTodo/></PrivateRoute>}/>

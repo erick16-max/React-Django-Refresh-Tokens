@@ -3,6 +3,7 @@ import jwt_decode from "jwt-decode";
 import { useNavigate } from 'react-router-dom';
 
 
+
 const AuthContext = createContext()
 
 export const AuthProvider =({children}) => {
@@ -15,6 +16,7 @@ export const AuthProvider =({children}) => {
     const [loading, setLoading] = useState(true);
     const [updateTask, setUpdateTask] = useState(null)
     const [taskId, setTaskId] = useState(null)
+    const [isLoading, setIsLoading] = useState(false)
     const navigate = useNavigate();
    
 
@@ -28,6 +30,7 @@ export const AuthProvider =({children}) => {
 
         if (username && email && password1 && password2){
             if(password1 === password2){
+                setIsLoading(true)
                 const response = await fetch("http://127.0.0.1:8000/api/signup/", {
                     method:'POST',
                     headers: {
@@ -42,11 +45,16 @@ export const AuthProvider =({children}) => {
                         })
                     })
                 const data = await response.json()
+
+                response ? setIsLoading(false) : setIsLoading(true)
+                
+                
                 //console.log(data)
                 if(response.status === 201){
-                    alert(`${username}, You were registered successfully`)
-                    navigate("/home")
+                    
+                    navigate("/login")
                 }else if(response.status === 400){
+                  
                     if(data.username){
                         alert(data.username[0])
                     }else if(data.email){
@@ -55,6 +63,7 @@ export const AuthProvider =({children}) => {
                         alert("error occured please check your inputs")
                     }
                 }else{
+                    
                     alert("error occured")
                 }
                 
@@ -73,6 +82,7 @@ export const AuthProvider =({children}) => {
 
     const loginUser = async (e) => {
         e.preventDefault();
+        setIsLoading(true)
         const response = await fetch("http://127.0.0.1:8000/api/token/", {
                 method:'POST',
                 headers: {
@@ -81,6 +91,7 @@ export const AuthProvider =({children}) => {
                 body:JSON.stringify({'username': e.target.username.value, 'password': e.target.password.value})
         })
         const data = await response.json()
+        response ? setIsLoading(false) : setIsLoading(true)
         if (response.status === 200) {
             setTokens(data)
             setUser(jwt_decode(data.access))
@@ -88,10 +99,15 @@ export const AuthProvider =({children}) => {
             navigate("/home")
             
             
-        } else {
+        }else if(response.status === 401) {
+            const errorMessage = "Invalid Credetials"
+            setError(errorMessage);
+            alert(error)
+        }else {
             const errorMessage = "Something went Wrong"
             setError(errorMessage);
             alert(error)
+           
         }
     }
 
@@ -162,9 +178,10 @@ export const AuthProvider =({children}) => {
         setLoading(false)
     }
 
+  
     const contextData  ={
         loginUser,user, tokens, logoutUser, registerUser, handleUpdateTodo, updateTask,setUpdateTask,
-        taskId, setTaskId
+        taskId, setTaskId, isLoading
     }
     return(
         <AuthContext.Provider value={contextData}>
